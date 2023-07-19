@@ -131,7 +131,7 @@ def run_terraform_command(command, s3_state, region, vars=None, no_vars=False):
     try:
         # Run the terraform command
         container = client.containers.run(
-            "hashicorp/terraform:latest",
+            "frankenk/terraform-pip3:latest",
             command=passed_commands,
             volumes=volumes,
             working_dir="/workspace",
