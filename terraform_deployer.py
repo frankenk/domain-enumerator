@@ -47,23 +47,28 @@ def check_s3_bucket(bucket_name, region):
     """
     s3 = boto3.client("s3", region_name=region)
 
-    # Check if the bucket exists
     try:
         s3.head_bucket(Bucket=bucket_name)
     except s3.exceptions.ClientError as e:
         # The bucket does not exist, create it
         if e.response["Error"]["Code"] == "404":
             print(f'State file bucket {bucket_name} does not exist". Creating...')
-            s3.create_bucket(
-                Bucket=bucket_name,
-                CreateBucketConfiguration={"LocationConstraint": region},
-            )
-            # Run terraform init to setup
+            try:
+                s3.create_bucket(
+                    Bucket=bucket_name,
+                    CreateBucketConfiguration={"LocationConstraint": region},
+                )
+                print(f"State file bucket {bucket_name} created successfully.")
+            except Exception as err:
+                print(f"Error creating S3 bucket: {str(err)}")
+                sys.exit(1)
+
+            # Run terraform init to setup    
             run_terraform_command(
-                f"init -migrate-state -var='aws_region={region}' -backend-config='bucket={bucket_name}'",
+                f"init -reconfigure -backend-config='bucket={bucket_name}'",
                 bucket_name,
                 region,
-            )
+            )                  
         else:
             print(f"Error checking S3 bucket: {e}")
             sys.exit
@@ -137,7 +142,7 @@ def run_terraform_command(command, s3_state, region, vars=None, no_vars=False):
         output = container.decode()
 
         # Delete the bucket after destroying
-        if command == "destroy" or command == "destroy -auto-approve":
+        if command == "destroy" or command == "destroy -auto-approve -input=false":
             delete_s3_bucket(s3_state)
         return output
     

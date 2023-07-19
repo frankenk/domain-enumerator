@@ -149,12 +149,20 @@ class DomainEnumerator:
         try:    
             response = s3.head_bucket(Bucket=bucket_name)
             creation_date = response['ResponseMetadata']['HTTPHeaders']['date']
-            response = s3.get_object(Bucket=bucket_name, Key=file_name)
-            content = response['Body'].read().decode()
-            domains = content.splitlines()
-            alive_domains_count = len(domains)
+            response = s3.list_objects_v2(Bucket=bucket_name)
+            
+            if 'Contents' in response:
+                file_exists = any(file['Key'] == file_name for file in response['Contents'])
+                
+                if file_exists:
+                    response = s3.get_object(Bucket=bucket_name, Key=file_name)
+                    content = response['Body'].read().decode()
+                    domains = content.splitlines()
+                    alive_domains_count = len(domains)
+                    
+                    return creation_date, alive_domains_count
 
-            return creation_date, alive_domains_count
+            return creation_date, 0
         except Exception as err:
             print(f"ERROR: error while retrieving statistics {str(err)}")
             raise err
@@ -162,15 +170,14 @@ class DomainEnumerator:
     def run_enumerator(self):
         self.load_configuration()
         self.help_options()
-
-        if self.args.domain and self.args.alert:
-            if self.is_infrastructure_up():
-                self.store_domains(self.args.domain)
-                variables = {
-                    "dc_webhook_url": self.args.alert
-                }
-                terraform_deployer.run_terraform_command("apply -auto-approve", self.state_bucket_name, self.region, variables)
-                print(f"Starting to monitor: {self.args.domain}")
+        variables = {
+            "dc_webhook_url": self.args.alert
+        } 
+        if self.args.domain and self.args.alert:           
+            output = terraform_deployer.run_terraform_command("apply -auto-approve", self.state_bucket_name, self.region, variables)
+            print(output)
+            self.store_domains(self.args.domain)
+            print(f"Starting to monitor: {self.args.domain}")
         elif self.args.status:
             if self.is_infrastructure_up():
                 creation_date, alive_domains_count = self.get_statistics(self.get_targets_bucket_name())
@@ -186,7 +193,9 @@ class DomainEnumerator:
             if self.is_infrastructure_up():
                 if self.confirm_action():
                     print("Destroying environment...")
-                    terraform_deployer.run_terraform_command("destroy -auto-approve", self.state_bucket_name, self.region)
+                    output = terraform_deployer.run_terraform_command("destroy -auto-approve -input=false", self.state_bucket_name, self.region, variables)
+                    print(output)
+                    print("Successfully destroyed environment")
         else:
             print("The following both arguments are required: -d/--domain,  -a/--alert.")
 
