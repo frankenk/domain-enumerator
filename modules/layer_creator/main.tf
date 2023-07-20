@@ -19,8 +19,8 @@ resource "null_resource" "lambda_layer" {
 }
 
 resource "aws_lambda_layer_version" "layer_package" {
-  layer_name  = local.layer_name
-  filename = "${path.module}/layer.zip"
+  layer_name          = local.layer_name
+  filename            = "${path.module}/layer.zip"
   compatible_runtimes = ["python3.9"]
   #skip_destroy = true
   depends_on = [null_resource.lambda_layer]

@@ -13,8 +13,8 @@ resource "aws_lambda_function" "lambda" {
   handler          = "${var.lambda_name}.lambda_handler"
   runtime          = var.python_runtime
   source_code_hash = data.archive_file.lambda_archive.output_base64sha256
-  layers = var.layers
-  timeout = var.timeout
+  layers           = var.layers
+  timeout          = var.timeout
   dynamic "environment" {
     for_each = var.lambda_environment_variables != {} ? [var.lambda_environment_variables] : []
     content {
@@ -49,9 +49,9 @@ resource "aws_iam_policy" "lambda_tooling_policy" {
     "Statement" : [
       {
         "Action" : [
-          "s3:Get*",
+          "s3:*Object",
           "s3:List*",
-          "s3-object-lambda:Get*",
+          "s3-object-lambda:*Object",
           "s3-object-lambda:List*"
         ],
         "Resource" : "*",
@@ -106,9 +106,9 @@ resource "aws_iam_policy" "lambda_tooling_policy" {
         "Effect" : "Allow"
       },
       {
-      "Effect": "Allow",
-      "Action": "iam:PassRole",
-      "Resource": "arn:aws:iam::${var.account_id}:role/*"
+        "Effect" : "Allow",
+        "Action" : "iam:PassRole",
+        "Resource" : "arn:aws:iam::${var.account_id}:role/*"
       }
     ]
   })
@@ -123,9 +123,9 @@ resource "aws_iam_role_policy_attachment" "lambda_role_attachment" {
 ########## Scheduler creation ##########
 
 resource "aws_scheduler_schedule" "sync_monitoring_eventbridge" {
-  count = var.exclude_scheduler_creation ? 0 : 1
-  name                         = "tf_${var.scheduler_name}"
-  group_name                   = "default"
+  count      = var.exclude_scheduler_creation ? 0 : 1
+  name       = "tf_${var.scheduler_name}"
+  group_name = "default"
   #schedule_expression_timezone = " " # Default is UTC.
   flexible_time_window {
     mode = "OFF"
@@ -141,7 +141,7 @@ resource "aws_scheduler_schedule" "sync_monitoring_eventbridge" {
 }
 
 resource "aws_iam_role" "eventbridge_role" {
-  count = var.exclude_scheduler_creation ? 0 : 1
+  count              = var.exclude_scheduler_creation ? 0 : 1
   assume_role_policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -161,7 +161,7 @@ EOF
 
 resource "aws_iam_policy" "schedulers_policy" {
   count = var.exclude_scheduler_creation ? 0 : 1
-  path = "/"
+  path  = "/"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -180,7 +180,7 @@ resource "aws_iam_policy" "schedulers_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "attachment" {
-  count = var.exclude_scheduler_creation ? 0 : 1
+  count      = var.exclude_scheduler_creation ? 0 : 1
   role       = aws_iam_role.eventbridge_role[count.index].name
   policy_arn = aws_iam_policy.schedulers_policy[count.index].arn
 }

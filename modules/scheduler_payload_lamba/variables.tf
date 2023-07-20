@@ -46,19 +46,19 @@ variable "exclude_scheduler_creation" {
 variable "scheduler_name" {
   description = "Defines EventBridge scheduler name"
   type        = string
-  default = null  
+  default     = null
 }
 
 variable "cron_expression" {
   description = "Defines when EventBridge schedule runs"
   type        = string
-  default = null
+  default     = null
 }
 
 variable "json_payload" {
   description = "Defines json payload that will be sent to lambda"
   type        = string
-  default = null  
+  default     = null
 }
 
 variable "policy_arns" {

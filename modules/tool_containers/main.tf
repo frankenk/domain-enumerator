@@ -1,11 +1,11 @@
 
 resource "aws_ecs_task_definition" "ecs_tooling_taskdefinition" {
-  family                  = "tf_${var.task_definition_name}"
+  family                   = "tf_${var.task_definition_name}"
   requires_compatibilities = ["FARGATE"]
-  cpu                     = 512
-  memory                  = 1024
-  network_mode            = "awsvpc"
-  execution_role_arn      = aws_iam_role.ecs_tooling_role.arn
+  cpu                      = 512
+  memory                   = 1024
+  network_mode             = "awsvpc"
+  execution_role_arn       = aws_iam_role.ecs_tooling_role.arn
 
   container_definitions = var.container_definitions
 

@@ -6,7 +6,7 @@ variable "aws_region" {
 variable "cluster_name" {
   description = "Defines ECS cluster name"
   type        = string
-  default = "domain_enumerator"
+  default     = "domain_enumerator"
 }
 
 variable "dc_webhook_url" {
