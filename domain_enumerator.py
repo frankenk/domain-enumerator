@@ -30,13 +30,13 @@ class DomainEnumerator:
         '''Allows to continiously monitor domains for change in subdomains using AWS. Before using, make sure configure your AWS credentials. Example: "aws configure".
 
         ---Specify domain(s) and discord webhook---
-        Example: "python3 shodanmore.py -d test.com, test2.com -a https://sadsadad"
+        Example: "python3 domain_enumerator.py -d test.com, test2.com -a https://weebhook"
 
         ---See if infrastructure deployed---
-        Example: "python3 shodanmore.py -s"
+        Example: "python3 domain_enumerator.py -s"
 
         ---Destroying environment---
-        Example: "python3 shodanmore.py -n"
+        Example: "python3 domain_enumerator.py -n"
         ''',formatter_class=RawTextHelpFormatter)
 
         parser.add_argument("-d", "--domain", help="Specify domains to monitor", nargs='+')
