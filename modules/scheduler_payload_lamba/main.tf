@@ -73,7 +73,8 @@ resource "aws_iam_policy" "lambda_tooling_policy" {
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents",
-          "logs:DescribeLogStreams"          
+          "logs:DescribeLogStreams",
+          "logs:GetLogEvents"
         ],
         "Resource" : "arn:aws:logs:*:*:*",
         "Effect" : "Allow"

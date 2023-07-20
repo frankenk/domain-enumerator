@@ -65,7 +65,7 @@ def check_s3_bucket(bucket_name, region):
 
             # Run terraform init to setup    
             run_terraform_command(
-                f"init -reconfigure -backend-config='bucket={bucket_name}'",
+                f"init -reconfigure -backend-config='bucket={bucket_name}' -backend-config='region={region}'",
                 bucket_name,
                 region,
             )                  
