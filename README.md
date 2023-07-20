@@ -7,7 +7,7 @@ Basically a subdomain enumerator that:
 2. Saves alive subdomains to S3
 3. Compares changes in subdomain number and sends alerts to Discord webhook if new domains appear.    
 
-![[images/domain_enumerator.drawio.png]]
+![domain_enumerator.png](https://raw.githubusercontent.com/frankenk/domain-enumerator/main/images/domain_enumerator.drawio.png)
 
 ## Requirements
 
@@ -35,6 +35,10 @@ Destroying environment
 
 To add different or more domains just specify them with `-d` flag (will overwrite previous ones):
 - `python3 domain_enumerator.py -d example.com, tesla.com -a https://weebhook`
+
+### Adding more tools
+
+//TBD
 
 ## Billing
 
