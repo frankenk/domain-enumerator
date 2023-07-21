@@ -58,14 +58,14 @@ def compare_domain_lists(previous_list, current_list):
         }
         return message
 
-    removed_domains = set(previous_list) - set(current_list)
+    #removed_domains = set(previous_list) - set(current_list)
     new_domains = set(current_list) - set(previous_list)
     
-    if removed_domains:
-        json_data = format_message("removed",removed_domains)
-        send_data_to_lambda(json_data)
-        print(json.dumps(json_data))
-    elif new_domains:
+    # if removed_domains:
+    #     json_data = format_message("removed",removed_domains)
+    #     send_data_to_lambda(json_data)
+    #     print(json.dumps(json_data))
+    if new_domains:
         json_data = format_message("new",new_domains)
         send_data_to_lambda(json_data)
         print(json.dumps(json_data))
